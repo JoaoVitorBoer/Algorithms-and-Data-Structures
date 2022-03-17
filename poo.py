@@ -7,22 +7,17 @@ class Node:
 
 
 
-
 sozinhas = []
 sequencia = []
 teste = []
 
 with open('caso01.txt', 'r') as arquivo:
-   
-   # teste = [Node(line[0], line[2:])  for line in arquivo.readlines() if line[1] != "/n"]
-    for line in arquivo.readlines():
-        
-        if line[2] != '\n':
-           teste.append(Node(line[0], line[2:]))
+    teste = [Node(line[0], line[2:-1])  for line in arquivo.readlines() if line[2] != "\n"]
     
    
 
-    for i in range(len(teste)):
-        print(teste[i].sozinha)
+    
+    print(teste[1].sequencia)
+    print(teste[2].sequencia)
 
 
