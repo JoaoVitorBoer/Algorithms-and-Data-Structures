@@ -14,7 +14,7 @@ teste = []
 
 with open('caso01.txt', 'r') as arquivo:
    
-    teste = [Node(line[0], line[2:]) for line in arquivo.readlines()]
+    teste = [Node(line[0], line[2:]) if line[1] != '/n' for line in arquivo.readlines()]
     
 
 print(teste[2].sozinha)
