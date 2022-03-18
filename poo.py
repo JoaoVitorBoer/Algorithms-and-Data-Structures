@@ -13,7 +13,7 @@ with open('caso01.txt', 'r') as arquivo:
     
    
 
-    for i in range(len(vet)):
-       print(vet[i].sozinha) 
+    #for i in range(len(vet)):
+    print(vet[22].sequencia) 
 
 
