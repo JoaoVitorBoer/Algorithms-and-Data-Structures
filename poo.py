@@ -22,11 +22,11 @@ def somador(inicial, vet):
                 for x in vet[j].sequencia:
                  soma = soma + somador(x, vet)
                 vet[j].tamanho = soma
-                z = len(vet)
+                
             else:
                 achou = False
                 soma = vet[j].tamanho
-    if(achou == False and i !='\n'):
+    if(achou == False):
         soma = 1
     return soma
             
