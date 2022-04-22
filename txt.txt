@@ -1,0 +1,91 @@
+
+Anticompressor 
+ 
+João Vitor Boer Abitante 
+Escola Politécnica – Pontifícia Universidade Católica do Rio Grande do Sul (PUCRS) 
+ Porto Alegre – RS – Brasil 
+Joao.Abitante@edu.pucrs.br 
+ 
+ 
+Resumo: Este artigo apresenta a solução para calcular a quantidade de caracteres da string de um documento pós processo de anti-compressão, aonde no documento, há letras, e cada letra tem ou não, sua respectiva frase. Será apresentada a descrição do problema, sua modelagem, uma solução e pseudocódigos do algoritmo criado. Para concluir são testados 10 casos fornecidos e é feita a análise dos resultados obtidos. O respectivo artigo compõe a disciplina de Algoritmos e Estrutura de Dados II, da Escola Politécnica da Pontifícia Universidade Católica do Rio Grande do Sul. 
+ 
+Introdução 
+
+O problema a ser investigado pode ser resumido assim: temos dados comprimidos em um arquivo (Figura 1), que podem ser facilmente entendidos como um dicionário, onde o char é a chave e a string é o valor.
+
+
+
+ 
+
+
+ 			Figura 1. Caso informado no enunciado do trabalho.
+
+Deve-se então, descomprimir e encontrar a a quantidade de letras da string final, ou seja, sempre que encontrarmos a letra “u” devemos transformá-la em “mimimi”. Para isso, segue-se três principais regras:
+
+1. Encontrar o char e a string aonde inicia-se a substituição, afim de evitar loops.
+
+2. Tratar corretamente as chaves que não contém valor, por exemplo, a letra “m”.
+
+3. A descompressão é encerrada somente quando a string final não tiver nenhum char para ser substituído.
+
+Por exemplo, seguindo estas regras obtemos como resultado:
+
+
+O problema a ser resolvido é determinar a quantidade final de carateres da string e o tempo que levou para executar o programa. Segundo o enunciado do trabalho, este caso teria um total de 47 caracteres. Ao todo, são 10 arquivos de casos de teste fornecidos pelo professor que devemos descomprimir. 
+Afim de solucionar este problema, analisaremos uma solução possível que seja eficiente. Após, os resultados obtidos serão apresentados em uma tabela juntamente com as concluosões realizadas.
+
+
+
+Modelagem
+
+Ao analisar o que foi solicitado podemos pensar em duas opções: fazer as substituições e no final calcular o tamanho da string resultante ou somar em uma variável o tamanho da string substituta sempre que for possível substituir. Tendo em vista essas duas possibilidades e a performance do código, escolhemos a segunda opção, pois na primeira seria necessário realizar um quantidade enorme de substituições  que resultariam um custo de processamento imenso.
+Considerando-se a escolha acima e a maneira como os casos estão escritos no arquivo, optamos por armazenar as informações em uma estrutura de lista (desconsiderando os chars em que não há respectiva string) aonde cada posição será um objeto de uma classe chamada Nodo, que contém os seguintes atributos: “sozinha”, “sequencia”, “primeiro” e “tamanho”. Estes correspondem respectivamente ao char, a string, um boolean que começará em True, e o tamanho da string atual.
+
+
+class Node:
+		def construtor(sozinha, sequencia, primeiro, tamanho):
+			sozinha = sozinha
+			sequencia = sequencia
+			primeiro = primeiro
+			tamanho = tamanho
+
+
+Logo, nossa lista ficaria assim:
+Nodo 1:
+a
+memimomu
+True
+8	Nodo 2:
+e
+mimomu
+False
+6	Nodo 3:
+i
+mooo
+False
+4	Nodo 4:
+u
+mimimi
+False
+7
+												*Lista
+	Os métodos implementados para encontrar a solução para cada um dos casos fornecidos serão descrito a seguir.
+	
+Solução 
+ 
+O primeiro passo para resolver o desafio é realizar a leitura dos arquivos de casos de teste colocando os valores corretos na lista de classes. Para começar, precisamos ler as linhas e separar a letra sozinha de sua sequencia. Com está constatação, podemos propor uma resposta bastante simples: visto que cada linha é um vetor de chars, bastaria pegar a posição linha[0] para ser a letra inicial e consequentemente pegar o que sobrou (ignorando o espaço) para ser a frase correspondente (linha[2:-1]).
+Porém, como foi citado na introdução, faz-se necessário desconsiderar os chars aonde não há respectiva string. E para isso, utiliza-se de uma condição que verifica a existencia da mesma. Caso a condição for verdadeira, o algoritmo adiciona um objeto na lista contendo a letra inicial encontrada, sua frase, um paramentro True (será explicado posteriormente), e o tamanho da frase correspondente. Um algoritmo implementando está idéia seria parecido com este:
+
+abrir (‘casox’, ‘ler’) as arquivo:
+	  para  linha  em  arquivo:
+	     if  linha[2] != ‘\n’:
+		  sozinha = linha[0]
+	 	  sequencia = linha[2:-1]
+		  tamanho = len(sequencia)
+		  lista_classes.adicionar(Nodo(sozinha, sequencia, True, tamanho))
+
+O próximo passo é encontrar qual é a letra incial do processo de descompressão, e para isso seguimos a ideia de que a letra não pode estar contida em nenhuma das sequencias do arquivo. Sabendo disso, podemos pensar em uma alternativa: realizar a verificação de cada letra com todas as sequencias obtidas. Se essa verificação for válida, ou seja, a letra está em alguma das sequências, alteramos o parâmetro primeiro para False, caso contrário, permanecerá em True. Está solução seria assim: 
+
+para  i  <  tamanho(lista):
+	  para  j  linha  tamanho(lista):
+	     if  lista[i].sozinha in lista[j].sequencia:
