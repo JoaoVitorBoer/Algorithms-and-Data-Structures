@@ -43,7 +43,9 @@ with open('caso01', 'r') as arquivo:
     salva2 = 0
     for i in range(len(vet)):
         if vet[i].first == True:
-            salva2 +=  somador(vet[i].sequencia, vet)           
+            salva2 +=  somador(vet[i].sequencia, vet)  
+
+                     
     
     print(salva2)
     
