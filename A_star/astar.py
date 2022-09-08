@@ -1,141 +1,90 @@
-from colorama import Fore, Back, Style
+from fileHandler import print_path
+from maze import cria_matriz, get_comidas
 
-class Node():
-    """A node class for A* Pathfinding"""
+def heuristica(pos, end):
+    return abs(end[0] - pos[0]) +  abs(end[1] - pos[1])
 
-    def __init__(self, parent=None, position=None):
-        self.parent = parent
-        self.position = position
+def manhattan(possiveis_pos, end):    
+    menor = heuristica(possiveis_pos[0], end)
+    salva_tupla = ()
+    for pos in possiveis_pos:
+        aux = heuristica(pos, end)
+        if aux < menor:
+            menor = aux
+            salva_tupla = pos
+    
+    return salva_tupla
 
-        self.g = 0
-        self.h = 0
-        self.f = 0
-
-    def __eq__(self, other):
-        return self.position == other.position
-
+    
+def posParaVisitar(pos_atual):
+    possiveis_pos = []
+    for nova_pos in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacentes
+        pos = (pos_atual[0] + nova_pos[0], pos_atual[1] + nova_pos[1])
+        if pos[0] >= 0 and pos[1] >= 0: 
+            possiveis_pos.append(pos)
+   
+    return possiveis_pos
+    
 
 def astar(maze, maze_aux, start, end):
-    """Returns a list of tuples as a path from the given start to the given end in the given maze"""
 
-    # Create start and end node
-    start_node = Node(None, start)
-    start_node.g = start_node.h = start_node.f = 0
-    end_node = Node(None, end)
-    end_node.g = end_node.h = end_node.f = 0
+    lista = []
+    lista.append(start)
+    maze_aux[start[0]][start[1]] = 'S'
+    caminho_adequado = []
+    caminho_adequado.append(start)
 
-    # Initialize both open and closed list
-    open_list = []
-    closed_list = []
+    while len(lista) > 0:
+        
+        pos = lista[0]
+        lista.pop(0)
+        pos_visitar = posParaVisitar(pos)
+        salva_validas = []
+        for posi_atual in pos_visitar:
+            if maze[posi_atual[0]][posi_atual[1]] != 1:
+                salva_validas.append(posi_atual)
+            if posi_atual == end:
+                maze_aux[posi_atual[0]][posi_atual[1]] = 'F'
+                caminho_adequado.append(posi_atual)
+                return caminho_adequado, maze_aux
+        
+        melhor_pos = manhattan(salva_validas, end)
+        maze_aux[melhor_pos[0]][melhor_pos[1]] = '-'
+        caminho_adequado.append(melhor_pos)
 
-    # Add the start node
-    open_list.append(start_node)
-
-    # Loop until you find the end
-    while len(open_list) > 0:
-
-        # Get the current node
-        current_node = open_list[0]
-        current_index = 0
-        for index, item in enumerate(open_list):
-            if item.f < current_node.f:
-                current_node = item
-                current_index = index
-
-        # Pop current off open list, add to closed list
-        open_list.pop(current_index)
-        closed_list.append(current_node)
-
-        # Found the goal
-        if current_node == end_node:
-            path = []
-            current = current_node
-            while current is not None:
-                path.append(current.position)
-                current = current.parent
-            return path[::-1], maze_aux # Return reversed path
-
-        # Generate children
-        children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
-
-            # Get node position
-            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
-
-            # Make sure within range
-            if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
-                continue
-
-            # Make sure walkable terrain
-            if maze[node_position[0]][node_position[1]] != 0:
-                continue
-
-            # Create new node
-            new_node = Node(current_node, node_position)
-            
-
-            # Append
-            children.append(new_node)
-            maze_aux[new_node.position[0]][new_node.position[1]] = ('-')
-
-        # Loop through children
-        for child in children:
-
-            # Child is on the closed list
-            for closed_child in closed_list:
-                if child == closed_child:
-                    continue
-
-            # Create the f, g, and h values
-            child.g = current_node.g + 1
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
-            child.f = child.g + child.h
-
-            # Child is already in the open list
-            for open_node in open_list:
-                if child == open_node and child.g > open_node.g:
-                    continue
-
-            # Add the child to the open list
-            open_list.append(child)
+        lista.append(melhor_pos)
 
 
 def main():
+      with open("labirinto1.txt", 'r') as f:
+        arquivo = f.readlines()
+    # maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        maze = cria_matriz(arquivo)
+        comidas = get_comidas(maze)
+        print(comidas)
+        maze_aux =  maze
+       
+        start = (0, 0)
+        end = comidas[0]
 
-    maze_aux=  [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-    start = (0, 0)
-    end = (7, 6)
-
-    path, maze_aux = astar(maze, maze_aux, start, end)
-    print('-----------------------')
-    print(path)
-    print(maze_aux)
-    with open('log.txt', 'a', newline='') as file:
+        path, maze_aux = astar(maze, maze_aux, start, end)
+        print(path)
         for x in maze_aux:
             for y in x:
-             file.write(str(y)+' ')
-            
-            file.write('\n')
+                 print(y, end=" ")
+            print('\n')
+
+        print_path(maze_aux)
+    
 if __name__ == '__main__':
     main()
