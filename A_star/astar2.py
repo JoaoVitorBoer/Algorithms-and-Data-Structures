@@ -1,4 +1,4 @@
-from printa_maze import print_path
+from printa_maze import print_path, cria_matriz, get_comidas
 
 def heuristica(pos, end):
     return abs(end[0] - pos[0]) +  abs(end[1] - pos[1])
@@ -57,31 +57,34 @@ def astar(maze, maze_aux, start, end):
 
 
 def main():
+      with open("labirinto1.txt", 'r') as f:
+        arquivo = f.readlines()
+    # maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        maze = cria_matriz(arquivo)
+        comidas = get_comidas(arquivo)
+        maze_aux =  maze
 
-    maze_aux =  maze
+        start = (0, 0)
+        end = comidas[0]
 
-    start = (0, 0)
-    end = (7, 6)
+        path, maze_aux = astar(maze, maze_aux, start, end)
+        print(path)
+        for x in maze_aux:
+            for y in x:
+                print(y, end=" ")
+            print('\n')
 
-    path, maze_aux = astar(maze, maze_aux, start, end)
-    print(path)
-    for x in maze_aux:
-        for y in x:
-            print(y, end=" ")
-        print('\n')
-
-    print_path(maze_aux)
- 
+        print_path(maze_aux)
+    
 if __name__ == '__main__':
     main()
