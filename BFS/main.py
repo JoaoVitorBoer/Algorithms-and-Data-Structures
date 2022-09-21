@@ -62,16 +62,12 @@ def posicoesParaVisitar(p, tamanho_tabuleiro):
     posicoes.append([p[0]+0, p[1]+1])
 
   return posicoes
-
-
-
   
   
 def buscaemLargura(tabuleiro, tamanho_tabuleiro, posicao, tabuleiro_aux):
 
   list = []
   x = [posicao[0], posicao[1], 0]
-  
   
   list.append(x) #coloca a primeira posicao na fila
   num = [1,2,3,4,5,6,7,8,9]
